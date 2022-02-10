@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@100&family=Roboto+Condensed:wght@300&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bistro Babushka</title>
+    <style>
+
+
+      nav {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      h1 {
+        display: flex;
+        justify-content: center;
+        font-family: "Special Elite", cursive;
+        /* font-family: 'Bebas Neue', cursive;
+        font-family: 'Londrina Solid', cursive; */
+        font-size: 2rem;
+        color: #5d5932;
+        padding-top: 2%;
+      }
+      article img {
+        max-width: 100%;
+        border-radius: 7px;
+      }
+      main {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-row: 1fr;
+        gap: 20px;
+        padding-top: 2%;
+        padding-left: 10%;
+        padding-right: 10%;
+      }
+
+      article {
+        /* border: 1px solid rgb(0, 0, 0); */
+        background-color: rgb(247, 243, 232);
+        padding: 20px;
+        border-radius: 10px;
+        font-family: "Roboto Condensed", sans-serif;
+      }
+
+      .valgt {
+        /* background-color: blue; */
+        border: 3px solid rgb(246, 250, 21);
+        color: white;
+      }
+
+      button:hover {
+        border: 3px solid rgb(246, 250, 21);
+        color: white;
+      }
+      button {
+        transition-duration: 0.4s;
+        border-radius: 5px;
+        padding: 7px;
+        background-color: #9e9b84;
+        color: white;
+        font-size: 1rem;
+        font-family: "Special Elite", cursive;
+        /* font-family: 'Bebas Neue', cursive;
+        font-family: 'Londrina Solid', cursive; */
+      }
+
+      #modal {
+        display: none;
+        width: 100vw;
+        height: 100vh;
+        display: fixed;
+        /* justify-content: center; */
+        background-color: #ede0cc;
+        font-family: "Roboto Condensed", sans-serif;
+      }
+
+      #modal img {
+        place-content: center;
+      }
+
+      #modal article {
+        max-width: 900px;
+        margin: auto;
+        background-color: #ede0cc;
+      }
+
+      body {
+        background-image: url("buska.svg");
+        background-size: 100%;
+        background-repeat: no-repeat;
+        padding-bottom: 5%;
+        background-color: #EDE0CC;
+      }
+      .indhold {
+        padding-top: 22%;
+      }
+
+      .oprindelsesregion {
+        font-size: 0.8rem;
+      }
+
+      /* footer {
+  font-family: "Roboto Condensed", sans-serif;
+  padding-top: 2%;
+  padding-left: 10%;
+  padding-right: 10%;
+      } */
+
+
+      @media (max-width: 800px) {
+
+        nav {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+    padding: 4%;
+      }
+
+       button {
+        transition-duration: 0.4s;
+        padding: 7px;
+background-color: #9e9b84;
+color: white;
+   font-size: 0.7rem;
+
+     }
+      h1 {
+        display: flex;
+        justify-content: center;
+        font-family: "Special Elite", cursive;
+    
+        font-size: 1.5rem;
+        color: #5d5932;
+        padding-top: 2%;
+      }
+ #modal {
+        display: none;
+        width: 95vw;
+        height: 95vh;
+        display: fixed;
+        background-color: #ede0cc;
+        font-family: "Roboto Condensed", sans-serif;
+      }
+
+        #modal article {
+        max-width: 500px;
+        margin: auto;
+        background-color: #ede0cc;
+      }
+
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <section class="indhold">
+      <nav>
+        <button data-kategori="alle" class="valgt">Alle</button>
+        <button data-kategori="forretter">Forretter</button>
+        <button data-kategori="hovedretter">Hovedretter</button>
+        <button data-kategori="desserter">Desserter</button>
+        <button data-kategori="sideorders">Sideorders</button>
+        <button data-kategori="drikkevarer">Drikkevarer</button>
+      </nav>
+      <h1>Alle</h1>
+      <!-- Det her er hvad der bliver vist når man klikker på en af retterne og ser det i single view -->
+      <aside id="modal">
+        <article>
+          <img src="" alt="" class="billede" />
+          <h2 class="navn"></h2>
+          <p class="tekst"></p>
+          <p class="pris"></p>
+          <p class="oprindelsesregion"></p>
+        </article>
+      </aside>
+    </section>
+    <main>
+      <template>
+        <article>
+          <img src="" alt="" class="billede" />
+          <h2 class="navn"></h2>
+          <p class="tekst"></p>
+          <p class="pris"></p>
+        </article>
+      </template>
+    </main>
+</body>
+    <script>
+      // henter json-array fra restdb i stedet for lokal .json-fil
+      const url = "https://babushka-dd8a.restdb.io/rest/menu";
+      const key = "600ec2fb1346a1524ff12de4";
+      const options = {
+        headers: {
+          "x-apikey": key,
+        },
+      };
+
+      // Vi laver en const til h1, fordi den skal kunne skifte navn fra hver side
+      const header = document.querySelector("h1");
+      // Vi laver en ID modal som er den der vises i single view
+      const modal = document.querySelector("#modal");
+
+      let retter; // definere en global variable
+
+      let filter = "alle";
+
+      // sætter eventlistener på alle knapper i nav'en
+      const filterKnapper = document.querySelectorAll("nav button");
+      filterKnapper.forEach((knap) =>
+        knap.addEventListener("click", filtrerRetter)
+      );
+
+      //   sætter filter til at være ligmed den data-attribut vi har defineret i HTML; forretter, hovedretter eller desserter.
+      // Nu laver vi functionen der gør at vi kan filtrere retterne tror jeg
+      function filtrerRetter() {
+        filter = this.dataset.kategori;
+
+        // fjerner klassen .valgt og lægger den til den knap der er trykket på
+        // Man fjerner klassen valgt for at man kan trykke på den igen
+        document.querySelector(".valgt").classList.remove("valgt");
+        this.classList.add("valgt");
+        visRetter();
+
+        // jeg sætter h1'erens tekstindhold ligmed tekstindholdet af den knap der er trykket på. Derfor vi lavede en const der hedder header
+        header.textContent = this.textContent;
+      }
+
+      // Henter json-data fra restdb via fetch
+      async function hentData() {
+        const respons = await fetch(url, options);
+        retter = await respons.json();
+        console.log("Retter", retter);
+        visRetter();
+      }
+
+      const main = document.querySelector("main");
+      const template = document.querySelector("template").content;
+
+      // loop'er gennem alle retter i json-arrayet
+      function visRetter() {
+        console.log("visRetter");
+
+        main.textContent = ""; // Her resetter jeg DOM'en ved at tilføje en tom string
+
+      // for hver ret i arrayet, skal der tjekkes om de opfylder filter-kravet (forretter, hovedretter, desserter osv) og derefter vises i DOM'en
+      // Her gør man så man kan filtrere retterne. Enten er man i en kategori eller også er man i kategorien 'alle' hvor alle retterne er 
+      retter.forEach((godRet) => {
+          if (filter == godRet.kategori || filter == "alle") {
+            const klon = template.cloneNode(true);
+            klon.querySelector(".billede").src =
+              "medium/" + godRet.billednavn + "-md.jpg";
+            klon.querySelector(".navn").textContent = godRet.navn;
+            klon.querySelector(".tekst").textContent = godRet.kortbeskrivelse;
+            klon.querySelector(".pris").textContent =
+              "Pris: " + godRet.pris + ",-";
+            klon
+              .querySelector("article")
+              .addEventListener("click", () => visDetaljer(godRet));
+            main.appendChild(klon);
+          }
+        });
+      }
+
+// Her laver jeg en funktion til modal hvor man viser informationerne når man er i singleview.
+//Altså man kombinerer det man har skrevet i html med det fra arrayen som på forhånd er defineret
+      function visDetaljer(godRet) {
+        console.log(godRet);
+        modal.style.display = "block";
+        modal.querySelector(".billede").src =
+          "medium/" + godRet.billednavn + "-md.jpg";
+        modal.querySelector(".navn").textContent = godRet.navn;
+           modal.querySelector(".oprindelsesregion").textContent = "Oprindelsesregion: " + godRet.oprindelsesregion;
+        modal.querySelector(".tekst").textContent = godRet.langbeskrivelse;
+        modal.querySelector(".pris").textContent =
+          "Pris: " + godRet.pris + ",-";
+        main.style.display = "none";
+      }
+// Her gør man så man kan kilikke på modal (tror jeg nok hehe)
+      modal.addEventListener(
+        "click",
+        () => ((modal.style.display = "none"), (main.style.display = "grid"))
+      );
+
+      hentData();
+    </script>
+  </body>
+</html>

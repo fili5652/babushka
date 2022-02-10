@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Persongalleri</title>
+
+    <style>
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 10px;
+        padding-left: 10%;
+        padding-right: 10%;
+      }
+      article {
+        display: block;
+        border: 1px solid rgb(233, 222, 65);
+        padding: 10px;
+      }
+      .valgt {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Babushka retter</h1>
+
+    <main>
+      <nav>
+        <button data-kategori="alle" class="valgt">Alle</button>
+        <button data-kategori="forretter">Forretter</button>
+        <button data-kategori="hovedretter">Hovedretter</button>
+        <button data-kategori="desserter">Desserter</button>
+        <button data-kategori="sideorders">Sideorders</button>
+        <button data-kategori="drikkevarer">Drikkevarer</button>
+      </nav>
+      <section class="liste"></section>
+      <template>
+        <article>
+          <img src="" alt="" class="img" />
+          <h2 class="navn"></h2>
+          <p class="kortbeskrivelse">kortbeskrivelse:</p>
+          <p class="pris">pris:</p>
+        </article>
+      </template>
+    </main>
+
+    <script>
+      //koden til at hente fra restdb.io
+      let retter;
+      let filter = "alle";
+      const url = "https://babushka-dd8a.restdb.io/rest/menu";
+      const key = "600ec2fb1346a1524ff12de4";
+      const options = {
+        headers: {
+          "x-apikey": "600ec2fb1346a1524ff12de4",
+        },
+      };
+      // slutter her^
+
+      const filterknapper = document.querySelectorAll("button");
+      const main = document.querySelector("main");
+      const template = document.querySelector("template").content;
+      document.addEventListener("DOMContentLoaded", start);
+
+      // Her henter jeg dataen fra persongalleriet og skriver den tilhørende kode ind
+
+      function start() {
+        filterknapper.forEach((knap) => {
+          knap.addEventListener("click", setFilter);
+        });
+
+        hentData();
+      }
+
+      function setFilter() {
+        filter = this.dataset.kategori;
+        document.querySelector(".valgt").classList.remove("valgt");
+        this.classList.add("valgt");
+        document.querySelector("h1").textContent = this.textContent;
+        vis();
+      }
+
+      async function hentData() {
+        const resspons = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-apikey": key,
+          },
+        });
+        retter = await resspons.json();
+        console.log(json);
+        vis();
+      }
+
+      // her skriver jeg data ind som ligger i array som vi looper igennem
+
+      function vis() {
+        retter.forEach((ret) => {
+          if (filter == ret.kategori || filter == "alle") {
+            const klon = template.cloneNode(true);
+            klon.querySelector(
+              "h2"
+            ).textContent = `${ret.navn} ${ret.kortbeskrivelse}`;
+
+            klon.querySelector(".img").src =
+              "medium/" + ret.billednavn + "-md.jpg";
+            klon.querySelector(".navn").textContent = ret.navn;
+            klon.querySelector(".kortbeskrivelse").textContent =
+              ret.kortbeskrivelse;
+            klon.querySelector(".pris").textContent = ret.pris;
+            main.appendChild(klon);
+          }
+        });
+      }
+
+      //   function vis() {
+      //     console.log(personer);
+      //     main.innerHTML = "";
+      //     retter.forEach((ret) => {
+      //       if (filter == retter.kategori || filter == "alle") {
+      //         const klon = template.cloneNode(true);
+      //         klon.querySelector(".img").src =
+      //           "medium/" + ret.billednavn + "-md.jpg";
+      //         klon.querySelector(".navn").textContent =
+      //           ret.navn + " " + ret.kortbeskrivelse;
+      //         klon.querySelector(".titel").textContent = ret.pris;
+      //         // klon
+      //         //   .querySelector("article")
+      //         //   .addEventListener("click", () => visDetaljer(person));
+      //         main.appendChild(klon);
+      //       }
+      //     });
+      //   }
+
+      //   https://persongalleri-5d3e.restdb.io/media/
+    </script>
+  </body>
+</html>
